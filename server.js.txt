@@ -1,0 +1,47 @@
+const express = require('express');
+const { exec } = require('child_process');
+
+const app = express();
+const PORT = 3000;
+
+app.post('run-powershell', (req, res) = {
+     PowerShell script to create a timestamped folder on the desktop
+    const powershellScript = `
+        # Get the current user's desktop path
+        $DesktopPath = [Environment]GetFolderPath(Desktop)
+
+        # Create a timestamp in the format yyyy-MM-dd_HH-mm-ss
+        $TimeStamp = Get-Date -Format yyyy-MM-dd_HH-mm-ss
+
+        # Define the folder name
+        $FolderName = Oscar_$TimeStamp
+
+        # Combine the desktop path with the folder name
+        $FolderPath = Join-Path -Path $DesktopPath -ChildPath $FolderName
+
+        # Create the folder
+        New-Item -ItemType Directory -Path $FolderPath -Force
+
+        Write-Output Folder created at $FolderPath
+    `;
+
+     Execute the PowerShell script
+    exec(`powershell -Command ${powershellScript.replace(ng, ';')}`, (error, stdout, stderr) = {
+        if (error) {
+            console.error(`Error ${error.message}`);
+            res.status(500).send('Error executing PowerShell script');
+            return;
+        }
+        if (stderr) {
+            console.error(`Stderr ${stderr}`);
+            res.status(500).send(`PowerShell Error ${stderr}`);
+            return;
+        }
+        console.log(`Stdout ${stdout}`);
+        res.status(200).send(`PowerShell script executed successfully. Outputn${stdout}`);
+    });
+});
+
+app.listen(PORT, () = {
+    console.log(`Server running at httplocalhost${PORT}`);
+});
